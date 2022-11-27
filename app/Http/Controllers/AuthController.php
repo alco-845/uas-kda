@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -18,9 +19,12 @@ class AuthController extends Controller
 
         if (Hash::check($password, $user->password)) {
             $apiToken = base64_encode(Str::random(40));
+            $date = Carbon::now();
+            $expiredDay = $date->addDays(7);
 
             $user->update([
-                'api_token' => $apiToken
+                'api_token' => $apiToken,
+                'token_expired' => $expiredDay
             ]);
 
             return response()->json([
